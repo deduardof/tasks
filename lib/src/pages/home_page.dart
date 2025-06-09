@@ -6,6 +6,7 @@ import 'package:tasks/src/core/constants/titles_app.dart';
 import 'package:tasks/src/features/tasks/tasks_bloc.dart';
 import 'package:tasks/src/features/tasks/tasks_event.dart';
 import 'package:tasks/src/features/tasks/tasks_state.dart';
+import 'package:tasks/src/features/themes/theme_cubit.dart';
 import 'package:tasks/src/models/task.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,18 +17,38 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late final TasksBloc tasksBloc;
+  late final ThemeCubit themeCubit;
+
   @override
   void initState() {
-    Future.delayed(Duration.zero, () {
-      context.read<TasksBloc>().add(LoadTasksEvent());
-    });
     super.initState();
+    tasksBloc = context.read<TasksBloc>();
+    themeCubit = context.read<ThemeCubit>();
+    Future.delayed(Duration.zero, () async {
+      await themeCubit.loadTheme();
+    });
+    tasksBloc.add(LoadTasksEvent());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text(TitlesApp.taskTitle)),
+      appBar: AppBar(
+        title: const Text(TitlesApp.taskTitle),
+        actions: [
+          BlocBuilder<ThemeCubit, ThemeMode>(
+            builder: (context, themeMode) => IconButton(
+              onPressed: () async {
+                themeCubit.toggleTheme();
+              },
+              icon: Icon(
+                (themeMode == ThemeMode.light) ? Icons.dark_mode : Icons.light_mode_outlined,
+              ),
+            ),
+          ),
+        ],
+      ),
       body: BlocBuilder<TasksBloc, TasksState>(
         builder: (context, state) {
           final tasks = state.tasks;

@@ -6,11 +6,10 @@ part 'isar_local_theme.g.dart';
 
 @collection
 class IsarLocalTheme {
-  final Id id;
+  final Id id = 0;
   final String name;
 
   IsarLocalTheme({
-    this.id = Isar.autoIncrement,
     required this.name,
   });
 }

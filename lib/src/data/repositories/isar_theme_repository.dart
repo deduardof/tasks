@@ -3,16 +3,12 @@ import 'package:tasks/src/models/isar_local_theme.dart';
 
 class IsarThemeRepository {
   final Isar _isar;
-  IsarThemeRepository(String dir)
-    : _isar = Isar.openSync(
-        [IsarLocalThemeSchema],
-        directory: dir,
-      );
+  IsarThemeRepository(Isar isar) : _isar = isar;
 
   Future<void> saveTheme(String themeName) async {
     print('Saving theme: $themeName');
     await _isar.writeTxn(() async {
-      await _isar.isarLocalThemes.put(IsarLocalTheme(id: 0, name: themeName));
+      await _isar.isarLocalThemes.put(IsarLocalTheme(name: themeName));
     });
   }
 

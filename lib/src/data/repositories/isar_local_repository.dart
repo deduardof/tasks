@@ -3,9 +3,9 @@ import 'package:tasks/src/data/repositories/local_repository.dart';
 import 'package:tasks/src/models/task.dart';
 
 class IsarLocalRepository extends LocalRepository {
-  late final Isar _isar;
+  final Isar _isar;
 
-  IsarLocalRepository(String directory) : _isar = Isar.openSync([TaskSchema], directory: directory);
+  IsarLocalRepository(Isar isar) : _isar = isar;
 
   @override
   Future<List<Task>> getAll() async {

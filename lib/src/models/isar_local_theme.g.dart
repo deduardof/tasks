@@ -63,7 +63,6 @@ IsarLocalTheme _isarLocalThemeDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = IsarLocalTheme(
-    id: id,
     name: reader.readString(offsets[0]),
   );
   return object;
