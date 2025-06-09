@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasks/src/core/routes/routes_app.dart';
+import 'package:tasks/src/core/themes/app_themes.dart';
 import 'package:tasks/src/data/repositories/isar_local_repository.dart';
 import 'package:tasks/src/data/repositories/local_repository.dart';
 import 'package:tasks/src/features/tasks/tasks_bloc.dart';
@@ -25,6 +26,9 @@ class TasksApp extends StatelessWidget {
       ],
       child: MaterialApp.router(
         routerConfig: routesApp,
+        themeMode: ThemeMode.system,
+        theme: ThemeData(colorScheme: schemeLight),
+        darkTheme: ThemeData(colorScheme: schemeDark),
       ),
     );
   }
