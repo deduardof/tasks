@@ -9,8 +9,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final dir = await getApplicationSupportDirectory();
-  print('Path: ${dir.path}');
-
   final isar = Isar.openSync([TaskSchema, IsarLocalThemeSchema], directory: dir.path);
 
   runApp(

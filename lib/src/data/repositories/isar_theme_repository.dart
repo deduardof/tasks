@@ -6,7 +6,6 @@ class IsarThemeRepository {
   IsarThemeRepository(Isar isar) : _isar = isar;
 
   Future<void> saveTheme(String themeName) async {
-    print('Saving theme: $themeName');
     await _isar.writeTxn(() async {
       await _isar.isarLocalThemes.put(IsarLocalTheme(name: themeName));
     });

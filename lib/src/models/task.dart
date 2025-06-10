@@ -7,6 +7,7 @@ class Task {
   final Id id;
   final String title;
   final String description;
+  final List<String> tags;
   final DateTime createAt;
   final bool isCompleted;
 
@@ -14,6 +15,7 @@ class Task {
     this.id = Isar.autoIncrement,
     required this.title,
     this.description = '',
+    this.tags = const [],
     required this.createAt,
     this.isCompleted = false,
   });
@@ -22,6 +24,7 @@ class Task {
     id: id,
     title: title,
     description: description,
+    tags: tags,
     createAt: createAt,
     isCompleted: !isCompleted,
   );

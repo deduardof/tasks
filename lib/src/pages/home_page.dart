@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:tasks/src/core/constants/app_sizes.dart';
 import 'package:tasks/src/core/constants/titles_app.dart';
 import 'package:tasks/src/features/tasks/tasks_bloc.dart';
 import 'package:tasks/src/features/tasks/tasks_event.dart';
 import 'package:tasks/src/features/tasks/tasks_state.dart';
 import 'package:tasks/src/features/themes/theme_cubit.dart';
-import 'package:tasks/src/models/task.dart';
+import 'package:tasks/src/pages/widgets/add_task_floating_action_button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,6 +17,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late final TasksBloc tasksBloc;
   late final ThemeCubit themeCubit;
+  final TextEditingController tagController = TextEditingController();
 
   @override
   void initState() {
@@ -75,67 +74,7 @@ class _HomePageState extends State<HomePage> {
                 );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () async {
-          String title = '';
-          String description = '';
-          final formKey = GlobalKey<FormState>();
-          final task = await showDialog<Task?>(
-            context: context,
-            builder: (_) {
-              return Dialog.fullscreen(
-                child: Padding(
-                  padding: EdgeInsets.all(AppSizes.defaultPadding),
-                  child: Form(
-                    key: formKey,
-                    child: Column(
-                      spacing: AppSizes.defaultPadding,
-                      children: [
-                        Text(
-                          'Adicionar tarefa',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        TextFormField(
-                          initialValue: title,
-                          onChanged: (value) => title = value,
-                          decoration: InputDecoration(),
-                          validator: (value) => (value?.isEmpty ?? true) ? 'Campo obrigatório.' : null,
-                        ),
-                        TextFormField(
-                          initialValue: description,
-                          onChanged: (value) => description = value,
-                          decoration: InputDecoration(),
-                        ),
-                        FilledButton.icon(
-                          onPressed: () {
-                            if (formKey.currentState?.validate() ?? false) {
-                              final now = DateTime.now();
-                              final task = Task(
-                                id: now.millisecondsSinceEpoch,
-                                title: title,
-                                description: description,
-                                createAt: now,
-                              );
-                              context.pop(task);
-                            }
-                          },
-                          label: Text('Adicionar'),
-                          icon: Icon(Icons.check),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
-          if (task != null) {
-            // ignore: use_build_context_synchronously
-            context.read<TasksBloc>().add(AddTaskEvent(task));
-          }
-        },
-      ),
+      floatingActionButton: AddTaskFloatingActionButton(),
     );
   }
 }
