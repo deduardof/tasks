@@ -5,7 +5,9 @@ import 'package:tasks/src/features/tasks/tasks_bloc.dart';
 import 'package:tasks/src/features/tasks/tasks_event.dart';
 import 'package:tasks/src/features/tasks/tasks_state.dart';
 import 'package:tasks/src/features/themes/theme_cubit.dart';
+import 'package:tasks/src/models/task.dart';
 import 'package:tasks/src/pages/widgets/add_task_floating_action_button.dart';
+import 'package:tasks/src/pages/widgets/task_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -67,6 +69,21 @@ class _HomePageState extends State<HomePage> {
                       ),
                       title: Text(task.title),
                       subtitle: (task.description.isNotEmpty) ? Text(task.description) : null,
+                      onLongPress: () async {
+                        final response = await showDialog<Task?>(
+                          context: context,
+                          builder: (context) => TaskDialog(task: task),
+                        );
+                        if (response != null) {
+                          final taskEdited = task.copyWith(
+                            title: response.title,
+                            description: response.description,
+                            tags: response.tags,
+                          );
+                          // ignore: use_build_context_synchronously
+                          context.read<TasksBloc>().add(UpdateTaskEvent(taskEdited));
+                        }
+                      },
                     );
                   },
                   separatorBuilder: (_, _) => Divider(),

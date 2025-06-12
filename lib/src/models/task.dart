@@ -28,4 +28,22 @@ class Task {
     createAt: createAt,
     isCompleted: !isCompleted,
   );
+
+  Task copyWith({
+    int? id,
+    String? title,
+    String? description,
+    List<String>? tags,
+    DateTime? createAt,
+    bool? isCompleted,
+  }) {
+    return Task(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      tags: tags ?? this.tags,
+      createAt: createAt ?? this.createAt,
+      isCompleted: isCompleted ?? this.isCompleted,
+    );
+  }
 }
