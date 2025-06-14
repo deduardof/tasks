@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       title: Text(task.title),
                       subtitle: (task.description.isNotEmpty) ? Text(task.description) : null,
-                      onLongPress: () async {
+                      onTap: () async {
                         final response = await showDialog<Task?>(
                           context: context,
                           builder: (context) => TaskDialog(task: task),

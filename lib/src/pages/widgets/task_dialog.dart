@@ -36,38 +36,59 @@ class _TaskDialogState extends State<TaskDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog.fullscreen(
+    return Dialog(
+      insetPadding: EdgeInsets.all(AppSizes.defaultPadding),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4.0),
+      ),
       child: Padding(
         padding: EdgeInsets.all(AppSizes.defaultPadding),
         child: Form(
           key: formKey,
-          child: Column(
-            spacing: AppSizes.defaultPadding,
-            children: [
-              Text(
-                'Adicionar tarefa',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              TextFormField(
-                initialValue: title,
-                onChanged: (value) => title = value,
-                decoration: InputDecoration(),
-                validator: (value) => (value?.isEmpty ?? true) ? 'Campo obrigatório.' : null,
-              ),
-              TextFormField(
-                initialValue: description,
-                onChanged: (value) => description = value,
-                decoration: InputDecoration(),
-              ),
-              BlocProvider<TagsCubit>(
-                create: (context) => TagsCubit([]),
-                child: BlocBuilder<TagsCubit, List<String>>(
-                  builder: (context, tags) {
-                    return Column(
+          child: BlocProvider(
+            create: (context) => TagsCubit(List.from(widget.task?.tags ?? [])),
+            child: BlocBuilder<TagsCubit, List<String>>(
+              builder: (context, tags) {
+                return Column(
+                  spacing: AppSizes.defaultPadding,
+                  children: [
+                    Row(
+                      children: [
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: Text(
+                            'Adicionar tarefa',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: context.pop,
+                          icon: Icon(Icons.close),
+                        ),
+                      ],
+                    ),
+                    TextFormField(
+                      initialValue: title,
+                      onChanged: (value) => title = value,
+                      decoration: InputDecoration(hintText: 'Título', prefixIcon: Icon(Icons.task_alt_outlined)),
+                      validator: (value) => (value?.isEmpty ?? true) ? 'Campo obrigatório.' : null,
+                    ),
+                    TextFormField(
+                      initialValue: description,
+                      onChanged: (value) => description = value,
+                      decoration: InputDecoration(
+                        hintText: 'Descrição',
+                        prefixIcon: Icon(Icons.assignment_outlined),
+                      ),
+                    ),
+                    Column(
                       children: [
                         TextFormField(
                           controller: tagController,
                           decoration: InputDecoration(
+                            hintText: 'Tag',
+                            prefixIcon: Icon(Icons.tag),
                             suffixIcon: IconButton(
                               onPressed: () {
                                 context.read<TagsCubit>().add(tagController.text.trim());
@@ -77,59 +98,67 @@ class _TaskDialogState extends State<TaskDialog> {
                             ),
                           ),
                         ),
-                        DecoratedBox(
-                          decoration: BoxDecoration(
-                            border: Border.all(),
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(AppSizes.defaultPadding),
-                            child: SizedBox(
-                              width: double.maxFinite,
-                              child: Wrap(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 6.0,
-                                      horizontal: 4.0,
-                                    ),
-                                    child: Text('Tags:'),
+                        Padding(
+                          padding: const EdgeInsets.all(AppSizes.defaultPadding),
+                          child: SizedBox(
+                            width: double.maxFinite,
+                            child: Wrap(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 6.0,
+                                    horizontal: 4.0,
                                   ),
-                                  ...tags.map(
-                                    (tag) => TextButton(
-                                      onPressed: () {
-                                        context.read<TagsCubit>().remove(tag);
-                                      },
-                                      child: Text(tag),
-                                    ),
+                                  child: Text('Tags:'),
+                                ),
+                                ...tags.map(
+                                  (tag) => TextButton(
+                                    onPressed: () {
+                                      context.read<TagsCubit>().remove(tag);
+                                    },
+                                    child: Text(tag),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ],
-                    );
-                  },
-                ),
-              ),
-              FilledButton.icon(
-                onPressed: () {
-                  if (formKey.currentState?.validate() ?? false) {
-                    final now = DateTime.now();
-                    final task = Task(
-                      id: now.millisecondsSinceEpoch,
-                      title: title,
-                      description: description,
-                      createAt: now,
-                    );
-                    context.pop(task);
-                  }
-                },
-                label: Text('Adicionar'),
-                icon: Icon(Icons.check),
-              ),
-            ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: context.pop,
+                            label: Text('Fechar'),
+                          ),
+                        ),
+                        SizedBox(width: AppSizes.defaultPadding),
+                        Expanded(
+                          child: FilledButton.icon(
+                            onPressed: () {
+                              if (formKey.currentState?.validate() ?? false) {
+                                final now = DateTime.now();
+                                final task = Task(
+                                  id: now.millisecondsSinceEpoch,
+                                  title: title,
+                                  description: description,
+                                  tags: tags,
+                                  createAt: now,
+                                );
+                                context.pop(task);
+                              }
+                            },
+                            label: Text((widget.task != null) ? 'Salvar' : 'Adicionar'),
+                            icon: Icon(Icons.check),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
