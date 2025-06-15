@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tasks/src/core/constants/app_sizes.dart';
 import 'package:tasks/src/core/constants/titles_app.dart';
 import 'package:tasks/src/features/tasks/tasks_bloc.dart';
 import 'package:tasks/src/features/tasks/tasks_event.dart';
 import 'package:tasks/src/features/tasks/tasks_state.dart';
 import 'package:tasks/src/features/themes/theme_cubit.dart';
 import 'package:tasks/src/models/task.dart';
-import 'package:tasks/src/pages/widgets/add_task_floating_action_button.dart';
 import 'package:tasks/src/pages/widgets/task_dialog.dart';
+import 'package:tasks/src/pages/widgets/task_item.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -58,17 +60,13 @@ class _HomePageState extends State<HomePage> {
                   child: Text('Não há tarefas agendadas.'),
                 )
               : ListView.separated(
+                  padding: EdgeInsets.all(
+                    AppSizes.minPadding,
+                  ),
                   itemBuilder: (_, index) {
                     final task = tasks[index];
-                    return ListTile(
-                      leading: Checkbox(
-                        value: task.isCompleted,
-                        onChanged: (value) {
-                          context.read<TasksBloc>().add(ToggleTaskEvent(task));
-                        },
-                      ),
-                      title: Text(task.title),
-                      subtitle: (task.description.isNotEmpty) ? Text(task.description) : null,
+                    return TaskItem(
+                      task: task,
                       onTap: () async {
                         final response = await showDialog<Task?>(
                           context: context,
@@ -85,13 +83,76 @@ class _HomePageState extends State<HomePage> {
                         }
                       },
                     );
+                    /* ListTile(
+                      tileColor: context.colors.primaryContainer,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppSizes.defaultRadius,
+                        ),
+                      ),
+                      leading: Checkbox(
+                        value: task.isCompleted,
+                        onChanged: (value) {
+                          context.read<TasksBloc>().add(ToggleTaskEvent(task));
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.minRadius,
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        task.title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          decoration: (task.isCompleted) ? TextDecoration.lineThrough : null,
+                        ),
+                      ),
+                      subtitle: (task.description.isNotEmpty)
+                          ? Text(
+                              task.description,
+                              style: TextStyle(
+                                decoration: (task.isCompleted) ? TextDecoration.lineThrough : null,
+                              ),
+                            )
+                          : null,
+
+                      onTap: () async {
+                        final response = await showDialog<Task?>(
+                          context: context,
+                          builder: (context) => TaskDialog(task: task),
+                        );
+                        if (response != null) {
+                          final taskEdited = task.copyWith(
+                            title: response.title,
+                            description: response.description,
+                            tags: response.tags,
+                          );
+                          // ignore: use_build_context_synchronously
+                          context.read<TasksBloc>().add(UpdateTaskEvent(taskEdited));
+                        }
+                      },
+                    ); */
                   },
-                  separatorBuilder: (_, _) => Divider(),
+                  separatorBuilder: (_, _) => SizedBox(height: 2),
                   itemCount: tasks.length,
                 );
         },
       ),
-      floatingActionButton: AddTaskFloatingActionButton(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.go('/task/types');
+          /* showModalBottomSheet(
+            context: context,
+            //isScrollControlled: true,
+            enableDrag: true,
+            builder: (context) {
+              return TaskTypeSelectBottom();
+            },
+          ); */
+        },
+        child: Icon(Icons.add),
+      ), //AddTaskFloatingActionButton(),
     );
   }
 }
